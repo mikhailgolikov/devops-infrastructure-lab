@@ -1,0 +1,71 @@
+---
+
+- name: "Создание системной группы для приложения"
+  group:
+    name: "{{ app_group }}"
+    state: present
+  become: true
+
+
+- name: "Создание пользователя базы данных "
+  postgresql_user:
+    name: "{{db_user}}"
+    password: "{{db_pass}}"
+    login_user: postgres
+    login_unix_socket: /var/run/postgresql
+    state: present
+  become: true
+  become_user: postgres
+
+- name: "Создание бд для пользователя"
+  postgresql_db:
+    name: "{{db_name}}"
+    owner: "{{db_user}}"
+    login_user: postgres
+    login_unix_socket: /var/run/postgresql
+    state: present
+  become: true
+  become_user: postgres
+
+- name: "Разрешаем юзеру доступ к бд"
+  postgresql_pg_hba:
+    dest: "/etc/postgresql/16/main/pg_hba.conf"
+    contype: host
+    databases: "{{db_name}}"
+    method: md5
+    users: "{{db_user}}"
+    address: "127.0.0.1/32"
+  become: true
+  notify: restart postgres
+
+- name: "Создание файла .pgpass для входа бэкапа без пароля"
+  copy:
+    dest: "/root/.pgpass"
+    content: "127.0.0.1:5432:mydb:myuser:Q3s-yLF-UZA-VCr"
+    owner: postgres
+    group: postgres
+    mode: "0600" 
+  become: true
+
+  
+- name: "Создание диреторий для бэкапа"
+  file:
+    path: "{{backup_dir}}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  
+
+- name: "Создать файл бэкапа"
+  template:
+    src: "mybackup.j2"
+    dest: "/etc/cron.daily/mybackup"
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+
+
+

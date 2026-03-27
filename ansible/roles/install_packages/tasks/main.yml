@@ -1,0 +1,15 @@
+---
+
+- name: "Обновление кэша"
+  apt:
+    update_cache: yes
+    cache_valid_time: "{{cache_valid_time}}"
+
+
+- name: "Установка пакетов на ВМ"
+  apt:
+      name: "{{item}}"
+      state: present
+  loop: "{{system_packages}}"
+  
+

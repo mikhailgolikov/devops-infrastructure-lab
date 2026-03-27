@@ -1,0 +1,28 @@
+DB_NAME="{{db_name}}"
+BACKUP_DIR="{{backup_dir}}"
+BACKUP_PATH="$BACKUP_DIR/$DB_NAME-$(date +%Y%m%d).sql"
+LOG_FILE="{{log_file}}"
+
+mkdir -p $BACKUP_DIR
+/usr/bin/pg_dump -U myuser -h 127.0.0.1 $DB_NAME > $BACKUP_PATH
+
+
+if [ $? -eq 0 ]; then
+    echo "$(date): Бэкап успешно создан" >> $LOG_FILE
+    if ! head -n 5 "$BACKUP_PATH" | grep -q "PostgreSQL database dump"; then
+        echo "$(date): Нет заголоквка дампа - ошибка!!!" >> $LOG_FILE
+        exit 1
+    fi
+    if ! tail -n 5 "$BACKUP_PATH" | grep -q "PostgreSQL database dump complete"; then
+
+        echo "$(date): неполный файл дампа - ошибка" >> $LOG_FILE
+        exit 1
+    fi
+
+    echo "$(date): Бэкап успешно создан и прошел полную проверку" >> $LOG_FILE
+else
+    echo "$(date): ОШИБКА при создании бэкапа" >> $LOG_FILE
+    exit 1
+fi
+
+find $BACKUP_DIR -name "*.sql" -mtime +7 -delete

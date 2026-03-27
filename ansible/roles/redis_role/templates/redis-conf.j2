@@ -1,0 +1,14 @@
+port {{item}}
+dir /var/lib/redis/{{item}}/
+appendonly no
+protected-mode no
+cluster-enabled yes
+cluster-node-timeout {{cluster_node_time}}
+cluster-config-file {{cluster_config_file}}/{{item}}/nodes_{{item}}.conf
+pidfile {{redis_pid_file}}/redis_{{item}}.pid
+logfile {{redis_log_file}}/redis_{{item}}.log
+loglevel notice
+requirepass {{redis_password}}
+masterauth {{redis_password}}
+maxmemory {{cache_memory}}
+maxmemory-policy {{cache_policy}}

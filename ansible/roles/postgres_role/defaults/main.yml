@@ -1,0 +1,8 @@
+db_user: "myuser"
+db_pass: "Q3s-yLF-UZA-VCr"
+db_name: "mydb"
+db_port:  5432
+
+backup_dir: "/var/backups/postgres"
+log_file: "/var/log/pg_backup.log"
+

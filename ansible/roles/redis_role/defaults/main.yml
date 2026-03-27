@@ -1,0 +1,13 @@
+---
+
+redis_description: "Redis database on %i"
+redis_password: "Q3s-yLF-UZA-VCr"
+redis_user: "redis"
+redis_host: "127.0.0.1"
+cluster_node_time: "5000"
+cache_memory: "100mb"
+cache_policy: "allkeys-lru"
+redis_log_file: "/var/log/redis"
+redis_pid_file: "/var/run/redis"
+cluster_config_file: "/etc/redis/cluster"
+

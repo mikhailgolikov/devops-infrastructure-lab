@@ -1,0 +1,89 @@
+---
+
+- name: "Остановить и отключить стандартный redis-server"
+  systemd:
+    name: redis-server
+    state: stopped
+    enabled: false
+  become: true
+
+- name: "Создание диреткорий для  нод Redis`а"
+  file:
+    path: "/var/lib/redis/{{item}}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: "0770"
+  loop: [7000, 7001, 7002, 7003, 7004, 7005]
+
+
+- name: "Создание базовой директории для кластера"
+  file:
+    path: "/etc/redis/cluster"
+    state: directory
+    owner: redis
+    group: redis
+    mode: "0755"
+  become: true
+
+
+- name: "Создание диреткорий для конфигов нод режиса"
+  file:
+    path: "/etc/redis/cluster/{{item}}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: "0775"
+  loop: [7000, 7001, 7002, 7003, 7004, 7005]
+
+ 
+
+- name: "Создание конфигов для нод кластера"
+  template:
+    src: redis-conf.j2
+    dest: "/etc/redis/cluster/{{item}}/redis_{{item}}.conf"
+    owner: redis
+    group: redis
+    mode: "0640"
+  loop: [7000, 7001, 7002, 7003, 7004, 7005]
+  become: true
+
+
+- name: "Создание юнит файла redis"
+  template:
+    src: redis.service@.j2
+    dest: /etc/systemd/system/redis@.service 
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - reload systemd
+
+
+- name: "start instance redis"
+  systemd:
+    name: "redis@{{item}}"
+    state: started
+    enabled: true
+    daemon_reload: yes
+  loop: [7000, 7001, 7002, 7003, 7004, 7005]
+  become: true
+
+
+
+
+- name: "Сборка кластера (выполняется один раз)"
+  shell: >
+    redis-cli --cluster create 
+    127.0.0.1:7000 127.0.0.1:7001 127.0.0.1:7002 
+    127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005 
+    --cluster-replicas 1 -a {{ redis_password }} --cluster-yes
+  register: cluster_out
+  run_once: true
+  become: true
+  failed_when: false
+
+
+
+ 

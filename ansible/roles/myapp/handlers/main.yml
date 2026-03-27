@@ -1,0 +1,19 @@
+---
+ 
+  - name: reload systemd
+    systemd:
+      daemon_reload: yes
+    become: true
+
+  - name: restart myapp
+    service:
+      name: myapp
+      state: restarted
+      enabled: yes
+    become: true
+
+  - name: Stop application
+    service:
+      name: myapp
+      state: stopped
+    become: true

@@ -1,0 +1,67 @@
+---
+
+- name: "Создание системной группы для приложения"
+  group:
+    name: "{{ app_group }}"
+    state: present
+  become: true
+
+- name: "Создание системного пользователя для приложения"
+  user:
+    name: "{{ app_user }}"
+    group: "{{ app_group }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+  become: true
+
+- name: "Создание необходимых директорий"
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{app_user}}"
+    group: "{{app_group}}"
+    mode: "0755"
+  loop:
+    - "{{env_dir}}"
+    - "{{log_dir}}"
+
+- name: "Склонировать мое приложение на go"
+  git: 
+    repo: https://gitlab+deploy-token-10:gldt-YoaESAp6VkzUmZS7gePz@gitlab.kupriyanov.space/Mikhail/go-app.git
+    dest: /opt/myapp
+    version: redis
+    force: yes
+  become: true
+
+- name: "Скомпилировать мое приложение"
+  command: "go build -o go-app main.go"
+  args:
+   chdir: "{{app_workdir}}/{{app_binary_file}}"
+  become: true
+
+- name: "Создать .env файл для приложения"
+  template:
+    src: env.j2
+    dest: /etc/myapp/.env
+    owner: "{{app_user}}"
+    group: "{{app_group}}"
+    mode: "0600"
+
+- name: "Создание юнит файла для приложения"
+  template:
+    src: myapp_unit.j2
+    dest: /etc/systemd/system/myapp.service 
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload systemd
+    - restart myapp
+
+
+
+ 
+
+
+

@@ -1,0 +1,17 @@
+[Unit]
+Description={{app_description}}
+After=network.target postgresql.service 
+
+[Service]
+Type=simple
+User={{app_user}}
+Group={{app_group}}
+WorkingDirectory={{app_workdir}}
+EnvironmentFile={{env_file}}
+ExecStart={{app_workdir}}/{{app_binary_file}}/{{app_binary_file}}
+Restart=on-failure
+StandardOutput=append:{{log_dir}}/{{app_app_log}} 
+StandardError=append:{{log_dir}}/{{app_error_log}} 
+
+[Install]
+WantedBy=multi-user.target

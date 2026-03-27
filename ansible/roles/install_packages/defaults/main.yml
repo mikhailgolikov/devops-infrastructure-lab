@@ -1,0 +1,16 @@
+---
+
+system_packages:
+  - redis-server
+  - postgresql
+  - git
+  - curl
+  - python3
+  - logrotate
+  - rclone
+  - wget
+  - golang-go
+  - python3-psycopg2
+  - acl
+
+cache_valid_time: 3600

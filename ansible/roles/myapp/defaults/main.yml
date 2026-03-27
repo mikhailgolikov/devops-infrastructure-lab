@@ -1,0 +1,27 @@
+app_description: "My Go App"
+app_user: "appuser"
+app_group: "appuser"
+app_workdir: "/opt/myapp"
+env_file: "/etc/myapp/.env"  
+log_dir: "/var/log/myapp"
+app_binary_file: "go-app"
+app_app_log: "app.log"
+app_error_log: "error.log"
+env_dir: "/etc/myapp"
+repo_dir: "hits-docker-practice"
+
+db_user: "myuser"
+db_pass: "Q3s-yLF-UZA-VCr"
+db_name: "mydb"
+db_host: "localhost"
+db_port:  5432
+
+redis_nodes:
+  - 127.0.0.1:7000
+  - 127.0.0.1:7001
+  - 127.0.0.1:7002
+  - 127.0.0.1:7003
+  - 127.0.0.1:7004
+  - 127.0.0.1:7005
+
+redis_pass: "Q3s-yLF-UZA-VCr"

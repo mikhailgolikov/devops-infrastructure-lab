@@ -1,0 +1,11 @@
+---
+
+- name: "main playbook"
+  hosts: managed_nodes
+  become: true
+  roles:
+    - install_packages
+    - postgres_role
+    - redis_role
+    - myapp
+
